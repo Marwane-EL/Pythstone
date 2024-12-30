@@ -18,7 +18,6 @@ class deck :
 
     def afficherDeck(self):
         self.cartes.afficher()
-
     def estVide(self):
         if self.tete == None :
             return True

@@ -1,7 +1,10 @@
 class hero:
-    def init(self, name,imgPath):
+    def init(self, name, imgPath, hp, hand):
         self.name = name
         self.imgPath = imgPath
+        self.hp == hp
+        self.hand = hand
+
 
     def getName(self):
         print('le nom du hero est ' + self.name)
