@@ -30,3 +30,10 @@ class ListeChainee:
             print(courant.valeur, end=" -> ")
             courant = courant.suivant
         print("None")
+
+    def taille(self):
+        courant = self.tete
+        compteur = 0
+        while courant :
+            compteur += 1
+            courant = courant.suivant
