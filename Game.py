@@ -24,7 +24,6 @@ class Game:
             self.changerTour()
 
     def gererPhase(self):
-        print("\nPhase actuelle : ", self.phase)
-        if self.phase == "Draw" :
-            self.joueurs.getNoeud(0).hand.piocher(self.deck) #Faut implementer le deck dans deck
-            self.joueurs.getNoeud(1)
+        joueurActif = self.tourActuel
+
+        joueurActif.addMana(1)

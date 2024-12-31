@@ -10,7 +10,8 @@ class deck :
         self.cartes.ajouter(carte)
 
     def retirerCarte(self):
-        self.cartes.retirer()
+        carteRetirer = self.cartes.retirer()
+        return carteRetirer
 
     '''
     def melanger(self):
