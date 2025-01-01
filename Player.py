@@ -1,3 +1,5 @@
+
+from Hero import *
 from Les4StructureDeDonnees.ListeChainee import ListeChainee
 
 class Player :
@@ -27,5 +29,39 @@ class Player :
     def healHero(self, amount):
         self.hero.hp += amount
 
-    def regenerMana(self):
+    def regenererMana(self):
         self.mana = self.maxMana
+
+    def addManaMax(self, amount):
+        self.maxMana += amount
+
+    def getManaMax(self):
+        print("Le montant du mana de " + self.hero.getName() + " est de ",self.maxMana + "\n")
+
+    def jouerCarte(self):
+        self.hand.afficher()
+        num = input("Veuillez joueur une carte (par son numero) : ")
+        carteJouee = self.hand.getNoeudIndice(num)
+        self.board.ajouter(carteJouee)
+        self.hand.supprimerNoeud(carteJouee)
+
+hero = Hero("Rexxar", 30)
+
+deck = ListeChainee()
+deck.ajouter(1)
+deck.ajouter(2)
+deck.ajouter(3)
+
+hand = ListeChainee()
+deck.ajouter(4)
+deck.ajouter(5)
+deck.ajouter(6)
+
+
+joueur1 = Player(hero, deck, hand, 1, "Marwane", 0)
+joueur1.addManaMax(1)
+joueur1.getManaMax()
+
+
+
+
