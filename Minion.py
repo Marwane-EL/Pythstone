@@ -1,8 +1,8 @@
 from Card import card
 
 
-class minion(card) :
-    def init(self, attackPoints, healthPoints, name, cost):
+class Minion(card) :
+    def __init__(self, attackPoints, healthPoints, name, cost):
         super().init(name, cost)
         self.ap = attackPoints
         self.hp = healthPoints
@@ -19,5 +19,6 @@ class minion(card) :
     def getHP(self):
         print("la vie de cette carte est de : " + self.hp)
 
-    def str(self):
-        print("la carte " + self.name + " a pour coût " + self.cost + " mana et a " + self.ap + " points attaques et " + self.hp + " points de vie")
+    def __str__(self):
+        return f"| {self.name:<10} | Attaque: {self.ap:<2} | Défense: {self.hp:<2} | Coût: {self.cost:<2} |"
+

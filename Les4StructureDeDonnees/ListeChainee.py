@@ -28,16 +28,17 @@ class ListeChainee:
         courant = self.tete
         compteur = 0
         while courant:
-            print("Num : ", compteur, " ", courant.valeur, end=" -> ")
+            print("Num : ", compteur, " ", courant.valeur)
             courant = courant.suivant
-        print("None")
+            compteur += 1
 
     def taille(self):
         courant = self.tete
         compteur = 0
-        while courant :
+        while courant:
             compteur += 1
             courant = courant.suivant
+        return compteur
 
     def supprimerNoeud(self, noeud_a_supprimer):
         if self.tete is None:
@@ -70,23 +71,23 @@ class ListeChainee:
 
     def supprimer_noeudIndice(self, indice):
         # Cas 1 : Liste vide
-        if self.head is None:
+        if self.tete is None:
             print("La liste est vide, rien à supprimer.")
             return
 
         # Cas 2 : Suppression de la tête
         if indice == 0:
-            self.head = self.head.next
+            self.tete = self.tete.suivant
             return
 
         # Cas 3 : Suppression d'un autre nœud
-        courant = self.head
+        courant = self.tete
         precedent = None
         compteur = 0
 
         while courant is not None and compteur < indice:
             precedent = courant
-            courant = courant.next
+            courant = courant.suivant
             compteur += 1
 
         # Si l'indice est hors limites
@@ -94,4 +95,4 @@ class ListeChainee:
             print("Indice hors limites.")
             return
 
-        precedent.next = courant.nexts
+        precedent.suivant = courant.suivant

@@ -3,6 +3,6 @@ class card :
         self.name = name
         self.cost = cost
 
-    def str(self):
-        print("la carte " + self.name + " a pour coût " + self.cost + " mana")
+    def __str__(self):
+        print(self.name, " ", self.cost)
 

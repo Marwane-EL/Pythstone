@@ -1,13 +1,14 @@
 from Les4StructureDeDonnees.ListeChainee import *
 
-class deck :
-    def __init__(self, nom, cartes, taille_max):
+class Deck :
+    def __init__(self, nom, taille_max):
         self.nom = nom
-        self.cartes = cartes
+        self.cartes = ListeChainee()
         self.tailleMax = taille_max
 
     def ajouterCartes(self, carte):
         self.cartes.ajouter(carte)
+        print("Carte ajoutee avec succes dans", self.nom, " : ", carte)
 
     def retirerCarte(self):
         carteRetirer = self.cartes.retirer()
@@ -19,6 +20,7 @@ class deck :
 
     def afficherDeck(self):
         self.cartes.afficher()
+
     def estVide(self):
         if self.tete == None :
             return True
@@ -26,5 +28,8 @@ class deck :
             return False
 
     def taille(self):
-        self.cartes.taille()
+        return self.cartes.taille()
+
+    def estVide(self):
+        return self.cartes.tete is None
 
