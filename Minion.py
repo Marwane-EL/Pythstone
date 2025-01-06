@@ -19,6 +19,10 @@ class Minion(card) :
     def getHP(self):
         print("la vie de cette carte est de : " + self.hp)
 
+    def attaquer(self, minion):
+        self.hp -= minion.ap
+        minion.hp -= self.hp
+
     def __str__(self):
         return f"| {self.name:<10} | Attaque: {self.ap:<2} | Défense: {self.hp:<2} | Coût: {self.cost:<2} |"
 
