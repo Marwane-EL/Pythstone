@@ -13,6 +13,9 @@ class Minion(card) :
     def changerHP(self, healthPoints):
         self.hp = healthPoints
 
+    def getName(self) : 
+        return self.name
+
     def getAP(self):
         print("l'attaque de cette carte est de : " + self.ap)
 

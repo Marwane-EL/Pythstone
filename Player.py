@@ -44,6 +44,9 @@ class Player:
 
     def getManaMax(self):
         return self.maxMana
+    
+    def getEnnemy(self) :
+        return self.ennemy
 
     def setEnnemy(self, ennemy):
         self.ennemy = ennemy
@@ -58,10 +61,14 @@ class Player:
 
 
     def attaque(self):
-        if not self.board :
+        if self.board.taille() == 0 :
             print(f"{self.name} n'a pas de serviteurs.")
             return
-
+        
+        if self.ennemy.board.taille() == 0:
+            print(f"{self.ennemy.name} n'a pas de serviteurs.")
+            return 
+        
         print("Serviteurs disponibles pour attaquer :")
         self.getBoard()
 
@@ -73,7 +80,6 @@ class Player:
             print("Entrée invalide. Action annulée.")
             return
 
-
         if 0 <= choix_attaquant <= self.board.taille():
             attaquant = self.board.getNoeud(choix_attaquant)
         else:
@@ -82,7 +88,7 @@ class Player:
 
         # Choisir une cible
         print("Choisissez une cible parmi les serviteurs ennemis ou le héros adverse.")
-        adversaire = self.ennemy()  # Méthode à implémenter pour obtenir l'adversaire
+        adversaire = self.getEnnemy()  # Méthode à implémenter pour obtenir l'adversaire
         print("Serviteurs ennemis disponibles :")
         self.ennemy.getBoard()
 
@@ -90,23 +96,23 @@ class Player:
         try:
             choix_cible = int(choix_cible)
         except ValueError:
-
-
             return
 
         if 0 <= choix_cible <= adversaire.board.taille():
-            cible = adversaire.plateau[choix_cible - 1]
+            cible = adversaire.board.getNoeud(choix_cible - 1)
             #Faut rajouter le fait d'attaquer le heros d'en face
         else:
             print("Choix invalide. Action annulée.")
             return
 
         print(f"{attaquant} attaque {cible} !")
+        print("Attaquant : ", attaquant)
+        print("Cible : " + cible.getName())
         attaquant.attaquer(cible)  # Méthode à définir dans `Hero` et `Minion`
-
+        
         # Supprimer les serviteurs morts
         self.nettoyerPlateau(self.board)
-        adversaire.nettoyerPlateau(adversaire.plateau)
+        adversaire.nettoyerPlateau(adversaire.board)
 
     def jouerCarte(self):
         if self.hand.taille() == 0 :
