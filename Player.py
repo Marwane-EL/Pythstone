@@ -26,10 +26,6 @@ class Player:
         self.takeDamage(self.fatigue)
         print(f"{self.name} subit {self.fatigue} dégâts de fatigue !")
 
-    def playCard(self, carte):
-        self.board.ajouter(carte)
-        self.hand.retirer(carte)  # Vérifie si la main est vide
-
     def takeDamage(self, amount):
         self.hero.hp -= amount
 
@@ -59,7 +55,6 @@ class Player:
         self.board.afficher()
         print("#-------------------------------------------------------------------------#")
 
-
     def attaque(self):
         if self.board.taille() == 0 :
             print(f"{self.name} n'a pas de serviteurs.")
@@ -81,7 +76,7 @@ class Player:
             return
 
         if 0 <= choix_attaquant <= self.board.taille():
-            attaquant = self.board.getNoeud(choix_attaquant)
+            attaquant = self.board.getNoeud(choix_attaquant).valeur
         else:
             print("Choix invalide. Action annulée.")
             return
@@ -99,15 +94,13 @@ class Player:
             return
 
         if 0 <= choix_cible <= adversaire.board.taille():
-            cible = adversaire.board.getNoeud(choix_cible - 1)
+            cible = adversaire.board.getNoeud(choix_cible).valeur
             #Faut rajouter le fait d'attaquer le heros d'en face
         else:
             print("Choix invalide. Action annulée.")
             return
 
-        print(f"{attaquant} attaque {cible} !")
-        print("Attaquant : ", attaquant)
-        print("Cible : " + cible.getName())
+        print(f"{attaquant.name} attaque {cible.name} !")
         attaquant.attaquer(cible)  # Méthode à définir dans `Hero` et `Minion`
         
         # Supprimer les serviteurs morts
@@ -128,10 +121,40 @@ class Player:
             if carteJouee is None:
                 print("#Indice invalide. Aucune carte n'a été jouée.\n")
                 return
+
+            # Accéder à la valeur pour l'ajouter au plateau
             self.board.ajouter(carteJouee.valeur)
+
+            # Supprimer le nœud de la main
             self.hand.supprimerNoeud(carteJouee)
-            print(f"#La carte '{carteJouee.valeur}' a été jouée.")
+            print(f"#La carte '{carteJouee.valeur.getName()}' a été jouée.")
+
             print("#-------------------------------------------------------------------------#")
         except ValueError:
             print("Entrée invalide. Veuillez entrer un numéro valide.")
+
+    def nettoyerPlateau(self, board):
+        """
+        Supprime tous les nœuds du board (ListeChainee) correspondant à des minions morts.
+
+        :param board: Le plateau (ListeChainee) à nettoyer.
+        """
+        courant = board.tete
+        precedent = None
+
+        while courant is not None:
+            # On vérifie si le minion est mort (exemple : HP <= 0)
+            if courant.valeur.hp <= 0:
+                print(courant.valeur.name, " a péri")
+                if precedent is None:  # Le nœud courant est la tête
+                    board.tete = courant.suivant
+                else:  # On connecte le précédent au suivant
+                    precedent.suivant = courant.suivant
+            else:
+                precedent = courant  # On avance le précédent uniquement si le nœud n'a pas été supprimé
+
+            courant = courant.suivant  # On passe au nœud suivant
+
+
+
 
