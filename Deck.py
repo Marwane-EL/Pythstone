@@ -1,35 +1,28 @@
-from Les4StructureDeDonnees.ListeChainee import *
+from Les4StructureDeDonnees.Pile import *
 
 class Deck :
     def __init__(self, nom, taille_max):
         self.nom = nom
-        self.cartes = ListeChainee()
+        self.cartes = Pile()
         self.tailleMax = taille_max
 
     def ajouterCartes(self, carte):
-        self.cartes.ajouter(carte)
+        self.cartes.empiler(carte)
         print("Carte ajoutee avec succes dans", self.nom, " : ", carte)
 
     def retirerCarte(self):
-        carteRetirer = self.cartes.retirer()
+        carteRetirer = self.cartes.depiler()
         return carteRetirer
-
-    '''
-    def melanger(self):
-    '''
 
     def afficherDeck(self):
         self.cartes.afficher()
 
     def estVide(self):
-        if self.tete == None :
+        if self.cartes.estVide() == True:
             return True
         else :
             return False
 
     def taille(self):
         return self.cartes.taille()
-
-    def estVide(self):
-        return self.cartes.tete is None
 

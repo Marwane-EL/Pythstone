@@ -26,7 +26,7 @@ class ListeChainee:
 
     def afficher(self):
         courant = self.tete
-        compteur = 0
+        compteur = 1
         while courant:
             print("Num : ", compteur, " ", courant.valeur)
             courant = courant.suivant

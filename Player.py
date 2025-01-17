@@ -14,12 +14,14 @@ class Player:
         self.fatigue = fatigue
         self.board = ListeChainee()  # Correction ici
         self.ennemy = None
+        self.graveyard = Pile()
 
     def drawCard(self):
         if self.deck.taille() == 0:
             self.appliquerFatigue()
         else:
             self.hand.ajouter(self.deck.retirerCarte())
+            print(self.name, "a pioché une carte")
 
     def appliquerFatigue(self):
         self.fatigue += 1
@@ -47,43 +49,61 @@ class Player:
     def setEnnemy(self, ennemy):
         self.ennemy = ennemy
 
+    def getGraveYard(self):
+        if not self.graveyard.estVide() :
+            return self.graveyard
+        else :
+            print("Vous n'avez pas de serviteur à réincarner")
 
     def getBoard(self):
         print("#-------------------------------------------------------------------------#")
         print("#\tAffichage du plateau :")
         print("#-------------------------------------------------------------------------#")
+        print("Num :  0   | PV de",self.ennemy.name, ":", self.ennemy.hero.hp)
         self.board.afficher()
         print("#-------------------------------------------------------------------------#")
 
     def attaque(self):
         if self.board.taille() == 0 :
             print(f"{self.name} n'a pas de serviteurs.")
+            print("#-------------------------------------------------------------------------#")
             return
         
         if self.ennemy.board.taille() == 0:
-            print(f"{self.ennemy.name} n'a pas de serviteurs.")
+            print(f"Votre adversaire n'a pas de serviteurs.")
+            print("#-------------------------------------------------------------------------#")
             return 
         
         print("Serviteurs disponibles pour attaquer :")
         self.getBoard()
 
         # Choisir un attaquant
-        choix_attaquant = input("Choisissez un serviteur pour attaquer : ")
+        choix_attaquant = input("Choisissez un serviteur pour attaquer (-1 pour passer le tour) : ")
         try:
             choix_attaquant = int(choix_attaquant)
         except ValueError:
             print("Entrée invalide. Action annulée.")
             return
 
-        if 0 <= choix_attaquant <= self.board.taille():
-            attaquant = self.board.getNoeud(choix_attaquant).valeur
+        while choix_attaquant == 0:
+            choix_attaquant = input("Choisissez un serviteur et non un héros (-1 pour passer le tour) : ")
+            try:
+                choix_attaquant = int(choix_attaquant)
+            except ValueError:
+                print("Entrée invalide. Action annulée.")
+                return
+
+        if choix_attaquant == -1 :
+            return
+        if 1 <= choix_attaquant <= self.board.taille():
+            attaquant = self.board.getNoeud(choix_attaquant-1).valeur
         else:
             print("Choix invalide. Action annulée.")
             return
 
         # Choisir une cible
         print("Choisissez une cible parmi les serviteurs ennemis ou le héros adverse.")
-        adversaire = self.getEnnemy()  # Méthode à implémenter pour obtenir l'adversaire
+        adversaire = self.getEnnemy()
         print("Serviteurs ennemis disponibles :")
         self.ennemy.getBoard()
 
@@ -93,14 +113,18 @@ class Player:
         except ValueError:
             return
 
-        if 0 <= choix_cible <= adversaire.board.taille():
+        if choix_cible == 0 :
+            attaquant.attaquerHero(self.ennemy.hero)
+            print(f"{attaquant.name} inflige {attaquant.ap} point de dégats à {self.ennemy.name} !")
+            print(f"{self.ennemy.name} n'a plus que {self.ennemy.hero.hp} pv!")
+            return
+        elif 1 <= choix_cible <= adversaire.board.taille():
             cible = adversaire.board.getNoeud(choix_cible).valeur
-            #Faut rajouter le fait d'attaquer le heros d'en face
         else:
             print("Choix invalide. Action annulée.")
             return
 
-        print(f"{attaquant.name} attaque {cible.name} !")
+        print(f"{attaquant.name} inflige {attaquant.ap} point de dégats à {cible.name} !")
         attaquant.attaquer(cible)  # Méthode à définir dans `Hero` et `Minion`
         
         # Supprimer les serviteurs morts
@@ -116,8 +140,11 @@ class Player:
         self.hand.afficher()
         print("#-------------------------------------------------------------------------#")
         try:
-            num = int(input("#Veuillez jouer une carte (par son numéro) : "))
-            carteJouee = self.hand.getNoeud(num)
+            num = input("#Veuillez jouer une carte (par son numéro) (-1 pour ne pas jouer) : ")
+            if num == "-1" :
+                print("#-------------------------------------------------------------------------#")
+                return
+            carteJouee = self.hand.getNoeud(int(num)-1)
             if carteJouee is None:
                 print("#Indice invalide. Aucune carte n'a été jouée.\n")
                 return
@@ -134,16 +161,10 @@ class Player:
             print("Entrée invalide. Veuillez entrer un numéro valide.")
 
     def nettoyerPlateau(self, board):
-        """
-        Supprime tous les nœuds du board (ListeChainee) correspondant à des minions morts.
-
-        :param board: Le plateau (ListeChainee) à nettoyer.
-        """
         courant = board.tete
         precedent = None
 
         while courant is not None:
-            # On vérifie si le minion est mort (exemple : HP <= 0)
             if courant.valeur.hp <= 0:
                 print(courant.valeur.name, " a péri")
                 if precedent is None:  # Le nœud courant est la tête
@@ -153,7 +174,7 @@ class Player:
             else:
                 precedent = courant  # On avance le précédent uniquement si le nœud n'a pas été supprimé
 
-            courant = courant.suivant  # On passe au nœud suivant
+            courant = courant.suivant
 
 
 

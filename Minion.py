@@ -1,4 +1,5 @@
 from Card import card
+from Les4StructureDeDonnees.File import *
 
 
 class Minion(card) :
@@ -6,6 +7,7 @@ class Minion(card) :
         super().init(name, cost)
         self.ap = attackPoints
         self.hp = healthPoints
+        self.effet = File()
 
     def changerAP(self, attackPoints):
         self.ap = attackPoints
@@ -26,6 +28,11 @@ class Minion(card) :
         self.hp = self.hp - minion.ap
         minion.hp = minion.hp - self.ap
 
+    def attaquerHero(self, hero):
+        hero.hp -= self.ap
+
     def __str__(self):
         return f"| {self.name:<10} | Attaque: {self.ap:<2} | Défense: {self.hp:<2} | Coût: {self.cost:<2} |"
 
+    def ajouterEffet(self, effet):
+        self.effet.enfiler(effet)

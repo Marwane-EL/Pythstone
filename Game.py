@@ -54,7 +54,7 @@ class Game:
 
     def phasePrincipale(self, joueur):
         try:
-            joueur.jouerCarte()  # Permet au joueur de jouer une carte
+            joueur.jouerCarte()  # Permet au joueur de jo1  uer une carte
         except Exception as e:
             print("Erreur lors de la phase principale :", e)
 
