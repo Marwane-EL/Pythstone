@@ -54,17 +54,19 @@ class Game:
 
     def phasePrincipale(self, joueur):
         try:
-            joueur.jouerCarte()  # Permet au joueur de jouer une carte
+            joueur.jouerCarte()  # Permet au joueur de jo1  uer une carte
         except Exception as e:
             print("Erreur lors de la phase principale :", e)
 
     def phaseAttaque(self,joueur):
-        try:
+        #try:
             joueur.setEnnemy(self.getAdversaire())
             joueur.attaque()  # Action d'attaque (à implémenter dans Player)
-        except AttributeError:
-            print(f"{joueur.name} n'a pas de méthode d'attaque définie.")
+            """
+        except AttributeError as a:
+            print(f"{joueur.name} n'a pas de méthode d'attaque définie.", a)
             print("#-------------------------------------------------------------------------#")
+            """
 
     def getAdversaire(self):
         return self.joueurs.getNoeud(1).valeur if self.tourActuel == self.joueurs.getNoeud(0).valeur else self.joueurs.getNoeud(0).valeur

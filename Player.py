@@ -14,21 +14,19 @@ class Player:
         self.fatigue = fatigue
         self.board = ListeChainee()  # Correction ici
         self.ennemy = None
+        self.graveyard = Pile()
 
     def drawCard(self):
         if self.deck.taille() == 0:
             self.appliquerFatigue()
         else:
             self.hand.ajouter(self.deck.retirerCarte())
+            print(self.name, "a pioché une carte")
 
     def appliquerFatigue(self):
         self.fatigue += 1
         self.takeDamage(self.fatigue)
         print(f"{self.name} subit {self.fatigue} dégâts de fatigue !")
-
-    def playCard(self, carte):
-        self.board.ajouter(carte)
-        self.hand.retirer(carte)  # Vérifie si la main est vide
 
     def takeDamage(self, amount):
         self.hero.hp -= amount
@@ -51,44 +49,61 @@ class Player:
     def setEnnemy(self, ennemy):
         self.ennemy = ennemy
 
+    def getGraveYard(self):
+        if not self.graveyard.estVide() :
+            return self.graveyard
+        else :
+            print("Vous n'avez pas de serviteur à réincarner")
 
     def getBoard(self):
         print("#-------------------------------------------------------------------------#")
         print("#\tAffichage du plateau :")
         print("#-------------------------------------------------------------------------#")
+        print("Num :  0   | PV de",self.ennemy.name, ":", self.ennemy.hero.hp)
         self.board.afficher()
         print("#-------------------------------------------------------------------------#")
-
 
     def attaque(self):
         if self.board.taille() == 0 :
             print(f"{self.name} n'a pas de serviteurs.")
+            print("#-------------------------------------------------------------------------#")
             return
         
         if self.ennemy.board.taille() == 0:
-            print(f"{self.ennemy.name} n'a pas de serviteurs.")
+            print(f"Votre adversaire n'a pas de serviteurs.")
+            print("#-------------------------------------------------------------------------#")
             return 
         
         print("Serviteurs disponibles pour attaquer :")
         self.getBoard()
 
         # Choisir un attaquant
-        choix_attaquant = input("Choisissez un serviteur pour attaquer : ")
+        choix_attaquant = input("Choisissez un serviteur pour attaquer (-1 pour passer le tour) : ")
         try:
             choix_attaquant = int(choix_attaquant)
         except ValueError:
             print("Entrée invalide. Action annulée.")
             return
 
-        if 0 <= choix_attaquant <= self.board.taille():
-            attaquant = self.board.getNoeud(choix_attaquant)
+        while choix_attaquant == 0:
+            choix_attaquant = input("Choisissez un serviteur et non un héros (-1 pour passer le tour) : ")
+            try:
+                choix_attaquant = int(choix_attaquant)
+            except ValueError:
+                print("Entrée invalide. Action annulée.")
+                return
+
+        if choix_attaquant == -1 :
+            return
+        if 1 <= choix_attaquant <= self.board.taille():
+            attaquant = self.board.getNoeud(choix_attaquant-1).valeur
         else:
             print("Choix invalide. Action annulée.")
             return
 
         # Choisir une cible
         print("Choisissez une cible parmi les serviteurs ennemis ou le héros adverse.")
-        adversaire = self.getEnnemy()  # Méthode à implémenter pour obtenir l'adversaire
+        adversaire = self.getEnnemy()
         print("Serviteurs ennemis disponibles :")
         self.ennemy.getBoard()
 
@@ -98,16 +113,18 @@ class Player:
         except ValueError:
             return
 
-        if 0 <= choix_cible <= adversaire.board.taille():
-            cible = adversaire.board.getNoeud(choix_cible - 1)
-            #Faut rajouter le fait d'attaquer le heros d'en face
+        if choix_cible == 0 :
+            attaquant.attaquerHero(self.ennemy.hero)
+            print(f"{attaquant.name} inflige {attaquant.ap} point de dégats à {self.ennemy.name} !")
+            print(f"{self.ennemy.name} n'a plus que {self.ennemy.hero.hp} pv!")
+            return
+        elif 1 <= choix_cible <= adversaire.board.taille():
+            cible = adversaire.board.getNoeud(choix_cible).valeur
         else:
             print("Choix invalide. Action annulée.")
             return
 
-        print(f"{attaquant} attaque {cible} !")
-        print("Attaquant : ", attaquant)
-        print("Cible : " + cible.getName())
+        print(f"{attaquant.name} inflige {attaquant.ap} point de dégats à {cible.name} !")
         attaquant.attaquer(cible)  # Méthode à définir dans `Hero` et `Minion`
         
         # Supprimer les serviteurs morts
@@ -123,15 +140,42 @@ class Player:
         self.hand.afficher()
         print("#-------------------------------------------------------------------------#")
         try:
-            num = int(input("#Veuillez jouer une carte (par son numéro) : "))
-            carteJouee = self.hand.getNoeud(num)
+            num = input("#Veuillez jouer une carte (par son numéro) (-1 pour ne pas jouer) : ")
+            if num == "-1" :
+                print("#-------------------------------------------------------------------------#")
+                return
+            carteJouee = self.hand.getNoeud(int(num)-1)
             if carteJouee is None:
                 print("#Indice invalide. Aucune carte n'a été jouée.\n")
                 return
+
+            # Accéder à la valeur pour l'ajouter au plateau
             self.board.ajouter(carteJouee.valeur)
+
+            # Supprimer le nœud de la main
             self.hand.supprimerNoeud(carteJouee)
-            print(f"#La carte '{carteJouee.valeur}' a été jouée.")
+            print(f"#La carte '{carteJouee.valeur.getName()}' a été jouée.")
+
             print("#-------------------------------------------------------------------------#")
         except ValueError:
             print("Entrée invalide. Veuillez entrer un numéro valide.")
+
+    def nettoyerPlateau(self, board):
+        courant = board.tete
+        precedent = None
+
+        while courant is not None:
+            if courant.valeur.hp <= 0:
+                print(courant.valeur.name, " a péri")
+                if precedent is None:  # Le nœud courant est la tête
+                    board.tete = courant.suivant
+                else:  # On connecte le précédent au suivant
+                    precedent.suivant = courant.suivant
+            else:
+                precedent = courant  # On avance le précédent uniquement si le nœud n'a pas été supprimé
+
+            courant = courant.suivant
+
+
+
 
