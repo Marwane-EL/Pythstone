@@ -1,0 +1,55 @@
+# Auteur : Farouk Mohamed Bendeddouche
+class NoeudArbre:
+    def __init__(self, valeur):
+        """Initialise un nœud avec une valeur et une liste d'enfants."""
+        self.valeur = valeur
+        self.enfants = None  # Pas de liste ici, juste un lien vers un autre enfant.
+
+    def ajouter_fils(self, enfant):
+        """Ajoute un enfant au nœud."""
+        if not isinstance(enfant, NoeudArbre):
+            print("L'enfant doit être une instance de NoeudArbre.")
+            return
+
+        if self.enfants is None:
+            self.enfants = enfant  # Si aucun enfant, on le place ici.
+        else:
+            courant = self.enfants
+            # Parcours jusqu'au dernier enfant
+            while courant.enfants is not None:
+                courant = courant.enfants
+            courant.enfants = enfant  # On ajoute le nouvel enfant à la fin.
+
+    def parcourir(self, profondeur=0):
+        """Parcourt le nœud et ses enfants récursivement."""
+        print("  " * profondeur + str(self.valeur))
+        if self.enfants:
+            self.enfants.parcourir(profondeur + 1)
+
+    def est_feuille(self) -> bool:
+        """Vérifie si le nœud est une feuille (pas d'enfants)."""
+        return self.enfants is None
+
+    def __str__(self) -> str:
+        """Retourne une représentation lisible du nœud."""
+        return f"Noeud({self.valeur})"
+
+class Arbre:
+    def __init__(self, valeur_racine):
+        """Initialise un arbre avec une racine donnée."""
+        self.racine = NoeudArbre(valeur_racine)
+
+    def parcourir(self):
+        """Parcourt tout l'arbre en commençant par la racine."""
+        if self.racine:
+            self.racine.parcourir()
+        else:
+            print("L'arbre est vide.")
+
+    def est_vide(self) -> bool:
+        """Vérifie si l'arbre est vide (pas de racine)."""
+        return self.racine is None
+
+    def __str__(self) -> str:
+        """Retourne une représentation lisible de l'arbre."""
+        return f"Arbre(Racine: {self.racine.valeur})" if self.racine else "Arbre vide"
